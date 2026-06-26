@@ -1,993 +1,608 @@
 # Java Data Types Mastery Guide  
-## Module 2 — Primitive Data Types
+## Module 2 — Primitive Types, Literals, and Conversion
 
-> **Goal of this module:** Understand all 8 Java primitive types deeply enough to explain their purpose, memory, range, behavior, and interview traps with confidence.
+> This module teaches the “number and character world” of Java.  
+> You will learn how Java stores small numbers, big numbers, decimal numbers, letters, true/false values, and how Java changes one type into another.
 
 ***
 
 ## Table of Contents
 
-1. [Big Picture: What Primitive Types Are](#big-picture-what-primitive-types-are)
-2. [Primitive Types Overview Table](#primitive-types-overview-table)
-3. [`byte`](#byte)
-4. [`short`](#short)
-5. [`int`](#int)
-6. [`long`](#long)
-7. [`float`](#float)
-8. [`double`](#double)
-9. [`char`](#char)
-10. [`boolean`](#boolean)
-11. [Primitive vs Primitive: How to Choose](#primitive-vs-primitive-how-to-choose)
-12. [Internal Working of Primitives](#internal-working-of-primitives)
-13. [Memory Representation](#memory-representation)
-14. [JVM Behavior](#jvm-behavior)
+1. [Questions First](#questions-first)
+2. [Big Picture](#big-picture)
+3. [Primitive Types Overview](#primitive-types-overview)
+4. [All 8 Primitive Types](#all-8-primitive-types)
+5. [Literals](#literals)
+6. [Binary, Octal, Hexadecimal](#binary-octal-hexadecimal)
+7. [Numeric Separators and Scientific Notation](#numeric-separators-and-scientific-notation)
+8. [Type Conversion](#type-conversion)
+9. [Type Promotion](#type-promotion)
+10. [Integer Internals](#integer-internals)
+11. [Floating-Point Internals](#floating-point-internals)
+12. [Character Internals](#character-internals)
+13. [Internal Working](#internal-working)
+14. [Real Project Example](#real-project-example)
 15. [Common Mistakes](#common-mistakes)
 16. [Interview Questions](#interview-questions)
 17. [Practice Questions](#practice-questions)
-18. [Quick Revision Sheet](#quick-revision-sheet)
-19. [Cheat Sheet](#cheat-sheet)
-20. [Mind Map](#mind-map)
-21. [Questions and Answers](#questions-and-answers)
+18. [Answers](#answers)
+19. [Quick Revision Sheet](#quick-revision-sheet)
+20. [Cheat Sheet](#cheat-sheet)
+21. [Mind Map](#mind-map)
 
 ***
 
-## Big Picture: What Primitive Types Are
+## Questions First
 
-Primitive types are Java’s most basic built-in data types. They store **actual values**, not objects. The Java Language Specification lists primitive types as predefined language types. [oreilly](https://www.oreilly.com/library/view/the-java-r-language/9780133260335/ch04lev1sec2.html)
+### Think before reading
 
-Java has 8 primitive types:
-
-- `byte`
-- `short`
-- `int`
-- `long`
-- `float`
-- `double`
-- `char`
-- `boolean`
-
-### Why primitive types exist
-
-They exist because Java needs:
-
-- fast storage,
-- predictable memory usage,
-- efficient arithmetic,
-- simple values like numbers and true/false.
-
-### Story
-
-Imagine a shop inventory system.
-
-- Number of items in stock: `int`
-- Small device code: `byte`
-- Product ID: `long`
-- Price estimate: `double`
-- Item category letter: `char`
-- Whether item is available: `boolean`
-
-Primitive types are the compact building blocks behind such values.
+1. Why does Java have 8 primitive types?
+2. Why is `int` the most common integer type?
+3. Why do `long` and `float` need suffixes?
+4. Why can `012` be dangerous?
+5. Why does `3.14` become `double` by default?
+6. Why do decimal numbers sometimes give surprising results?
+7. Why is `char` not the same as `String`?
+8. What happens when one type is changed into another type?
+9. Why does Java sometimes automatically convert a value?
+10. Why do some numbers overflow?
 
 ***
 
-## Primitive Types Overview Table
+## Big Picture
+
+Primitive types are Java’s simplest built-in types. They store the actual value directly. Oracle’s Java tutorial describes the primitive set and notes that `byte`, `short`, `int`, `long`, `float`, `double`, `char`, and `boolean` are the primitive types used in Java. [docs.oracle](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html)
+
+### What this module covers
+
+- all primitive types,
+- how literals work,
+- how number systems work,
+- how Java converts types,
+- how Java promotes types in expressions,
+- how integers and decimals behave inside the computer.
+
+### Simple idea
+
+Java must store different kinds of values in different ways:
+
+- tiny whole number
+- big whole number
+- decimal number
+- one character
+- true/false
+
+***
+
+## Primitive Types Overview
 
 | Type | Size | Default Value | Wrapper Class | Main Use |
 |---|---:|---|---|---|
-| `byte` | 8-bit | `0` | `Byte` | Very small integers, raw binary data |
-| `short` | 16-bit | `0` | `Short` | Small integers when memory matters |
-| `int` | 32-bit | `0` | `Integer` | General-purpose whole numbers |
-| `long` | 64-bit | `0L` | `Long` | Very large whole numbers |
-| `float` | 32-bit | `0.0f` | `Float` | Smaller decimal values, memory-saving |
-| `double` | 64-bit | `0.0d` | `Double` | Standard decimal type for most use |
-| `char` | 16-bit | `'\u0000'` | `Character` | A single Unicode character |
-| `boolean` | JVM-dependent conceptually 1-bit logical type | `false` | `Boolean` | True/false logic |
+| `byte` | 8-bit | `0` | `Byte` | very small integers |
+| `short` | 16-bit | `0` | `Short` | small integers |
+| `int` | 32-bit | `0` | `Integer` | general whole numbers |
+| `long` | 64-bit | `0L` | `Long` | very large whole numbers |
+| `float` | 32-bit | `0.0f` | `Float` | decimal values with lower precision |
+| `double` | 64-bit | `0.0d` | `Double` | normal decimal values |
+| `char` | 16-bit | `'\u0000'` | `Character` | one character |
+| `boolean` | logical type | `false` | `Boolean` | true/false decisions |
 
-> The default values above are the standard defaults for fields; local variables do not get defaults automatically. Oracle’s tutorial and common Java references describe the primitive set and their use, while Java documentation and teaching materials list the usual default values. [docs.oracle](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html)
+> Default values above are the standard field defaults; local variables must be initialized before use.
 
 ***
 
-## `byte`
+## All 8 Primitive Types
 
-### What is it?
+### 1) `byte`
 
-`byte` is a small integer type.
+A `byte` is a tiny whole number type.
 
+- Range: `-128` to `127`
+- Size: 8 bits
+- Use: small counts, binary data, memory-sensitive arrays
+
+#### Why created?
+To save memory when values are very small.
+
+#### Example
 ```java
-byte b = 10;
+byte b = 100;
 ```
 
-### Why does it exist?
-
-It exists to save memory when you know the number will be small.
-
-### Why do we need it?
-
-Use it when working with:
-
-- raw binary data,
-- file streams,
-- network protocols,
-- memory-sensitive code.
-
-### What problem does it solve?
-
-It solves the problem of storing tiny whole numbers efficiently.
-
-### History or background
-
-`byte` is useful because computers work with 8-bit units naturally.
-
-### Real-world analogy
-
-A `byte` is like a small coin pouch. It is not for large amounts of money, just small values.
-
-### Memory size
-
-- 8 bits
-- 1 byte of memory
-
-### Range
-
-- `-128` to `127`
-
-### Binary representation
-
-An 8-bit signed value is stored in two’s complement form.
-
-### Default value
-
-- `0`
-
-### Wrapper class
-
-- `Byte`
-
-### Internal working
-
-Java stores the 8-bit pattern directly. The leftmost bit acts as the sign bit in signed binary interpretation.
-
-### Performance
-
-- Very memory efficient
-- Not always faster than `int` in arithmetic, because CPUs often work with `int`-sized values more naturally
-
-### Real use cases
-
-- Reading files byte by byte
-- Network packets
-- Compact numeric arrays
-- Low-level I/O
-
-### Syntax
-
+#### Common trap
 ```java
-byte temperature = 42;
-```
-
-### Rules
-
-- Value must fit in `-128..127`.
-- Compile-time constants must be assignable without overflow.
-
-### Advantages
-
-- Small memory usage
-- Good for binary data
-
-### Limitations
-
-- Very small range
-- Easy to overflow
-
-### Common beginner mistake
-
-```java
-byte x = 130; // error
-```
-
-Because `130` is outside the `byte` range.
-
-### Interview questions
-
-- What is the range of `byte`?
-- Why is `byte` useful in file handling?
-- What happens when a `byte` overflows?
-
-### Code example
-
-```java
-public class ByteDemo {
-    public static void main(String[] args) {
-        byte age = 20;
-        System.out.println(age);
-    }
-}
-```
-
-### Dry run
-
-- `age` gets value `20`
-- printed value is `20`
-
-### Output
-
-```text
-20
-```
-
-### Memory diagram
-
-```text
-Stack:
-age -> 00010100
+byte b = 128; // error
 ```
 
 ***
 
-## `short`
+### 2) `short`
 
-### What is it?
+A `short` is a small whole number type.
 
-`short` is a 16-bit signed integer.
+- Range: `-32,768` to `32,767`
+- Size: 16 bits
+- Use: small numeric storage
 
+#### Why created?
+To give more range than `byte`, but less space than `int`.
+
+#### Example
 ```java
-short s = 1000;
-```
-
-### Why does it exist?
-
-It exists as a middle ground between `byte` and `int`.
-
-### Why do we need it?
-
-It is useful when:
-
-- memory matters,
-- values are small,
-- you want more range than `byte`.
-
-### What problem does it solve?
-
-It stores moderate-size integers in less space than `int`.
-
-### Memory size
-
-- 16 bits
-- 2 bytes
-
-### Range
-
-- `-32,768` to `32,767`
-
-### Default value
-
-- `0`
-
-### Wrapper class
-
-- `Short`
-
-### Internal working
-
-Stored in 16 bits, using signed binary representation.
-
-### Performance
-
-Useful for storage, but arithmetic often promotes it to `int`.
-
-### Real use cases
-
-- Small counters
-- Legacy file formats
-- Compact data structures
-
-### Syntax
-
-```java
-short marks = 1200;
-```
-
-### Limitations
-
-- Rarely used in day-to-day Java
-- Arithmetic promotion reduces its advantage
-
-### Code example
-
-```java
-public class ShortDemo {
-    public static void main(String[] args) {
-        short year = 2026;
-        System.out.println(year);
-    }
-}
-```
-
-### Output
-
-```text
-2026
+short s = 2000;
 ```
 
 ***
 
-## `int`
+### 3) `int`
 
-### What is it?
+An `int` is the default whole-number type in Java.
 
-`int` is the default integer type in Java for most whole-number work.
+- Range: `-2,147,483,648` to `2,147,483,647`
+- Size: 32 bits
+- Use: counters, indexes, age, loops, scores
 
+#### Why created?
+It gives a very good balance of speed and range.
+
+#### Example
 ```java
-int n = 100;
-```
-
-### Why does it exist?
-
-It gives a strong balance of:
-
-- size,
-- speed,
-- range,
-- convenience.
-
-### Why do we need it?
-
-Most counting and arithmetic use values that fit well inside `int`.
-
-### What problem does it solve?
-
-It is the standard general-purpose integer type.
-
-### Memory size
-
-- 32 bits
-- 4 bytes
-
-### Range
-
-- `-2,147,483,648` to `2,147,483,647`
-
-### Default value
-
-- `0`
-
-### Wrapper class
-
-- `Integer`
-
-### Internal working
-
-Java stores the 32-bit signed value directly. Most integer arithmetic is optimized around `int`.
-
-### Performance
-
-- Very efficient
-- Usually the best default choice for integers
-
-### Real use cases
-
-- Age
-- Count
-- Index
-- Loop variables
-- Scores
-
-### Syntax
-
-```java
-int count = 500;
-```
-
-### Advantages
-
-- Fast
-- Enough for most use cases
-- Easy to read and use
-
-### Limitations
-
-- Can overflow for very large numbers
-
-### Common beginner mistake
-
-Thinking `int` can store any number.
-
-It cannot.
-
-### Code example
-
-```java
-public class IntDemo {
-    public static void main(String[] args) {
-        int a = 10;
-        int b = 20;
-        int sum = a + b;
-        System.out.println(sum);
-    }
-}
-```
-
-### Dry run
-
-- `a = 10`
-- `b = 20`
-- `sum = 30`
-
-### Output
-
-```text
-30
+int age = 25;
 ```
 
 ***
 
-## `long`
+### 4) `long`
 
-### What is it?
+A `long` is a large whole-number type.
 
-`long` is a 64-bit signed integer.
+- Range: very large positive and negative values
+- Size: 64 bits
+- Use: IDs, timestamps, huge counts
 
+#### Why created?
+To store values that do not fit in `int`.
+
+#### Example
 ```java
-long population = 8000000000L;
+long distance = 5000000000L;
 ```
 
-### Why does it exist?
-
-It exists to store large whole numbers beyond the `int` range.
-
-### Why do we need it?
-
-Use it when numbers can become very large:
-
-- timestamps,
-- IDs,
-- counters,
-- large quantities.
-
-### What problem does it solve?
-
-It prevents overflow when `int` is too small.
-
-### Memory size
-
-- 64 bits
-- 8 bytes
-
-### Range
-
-- `-9,223,372,036,854,775,808` to `9,223,372,036,854,775,807`
-
-### Default value
-
-- `0L`
-
-### Wrapper class
-
-- `Long`
-
-### Internal working
-
-Stored in 64-bit signed binary format.
-
-### Performance
-
-- Slightly larger memory cost than `int`
-- Use only when needed
-
-### Rule
-
-A long literal usually needs `L` at the end.
-
-```java
-long x = 100L;
-```
-
-### Code example
-
-```java
-public class LongDemo {
-    public static void main(String[] args) {
-        long distance = 1234567890123L;
-        System.out.println(distance);
-    }
-}
-```
-
-### Output
-
-```text
-1234567890123
-```
-
-### Common mistake
-
-```java
-long x = 1234567890123; // may fail or be treated as int literal
-```
-
-Use `L`.
+#### Important
+Use `L` at the end.
 
 ***
 
-## `float`
+### 5) `float`
 
-### What is it?
+A `float` is a decimal type with lower precision.
 
-`float` is a 32-bit floating-point type used for decimal numbers.
+- Size: 32 bits
+- Use: graphics, memory-saving decimal storage
 
+#### Why created?
+To store decimal values with less memory.
+
+#### Example
 ```java
 float price = 12.5f;
 ```
 
-### Why does it exist?
+#### Important
+Use `f` at the end.
 
-It exists to store decimal values using less memory than `double`.
+***
 
-### Why do we need it?
+### 6) `double`
 
-Useful when:
+A `double` is a decimal type with better precision.
 
-- memory is tight,
-- approximate decimal values are acceptable.
+- Size: 64 bits
+- Use: most decimal calculations
 
-### What problem does it solve?
+#### Why created?
+To store decimal values more accurately than `float`.
 
-It stores fractional numbers compactly.
-
-### Memory size
-
-- 32 bits
-- 4 bytes
-
-### Range
-
-Approximate range is very large, but precision is limited.
-
-### Default value
-
-- `0.0f`
-
-### Wrapper class
-
-- `Float`
-
-### Internal working
-
-Uses IEEE 754 binary floating-point format. Decimal values are converted into binary approximations.
-
-### Performance
-
-- Smaller than `double`
-- Often less preferred than `double` in general Java code
-
-### Real use cases
-
-- Graphics
-- Scientific approximations
-- Memory-sensitive numeric data
-
-### Syntax
-
+#### Example
 ```java
-float f = 3.14f;
-```
-
-### Rule
-
-Use `f` or `F` suffix.
-
-### Precision note
-
-`float` has about 6 to 7 decimal digits of precision.
-
-### Code example
-
-```java
-public class FloatDemo {
-    public static void main(String[] args) {
-        float value = 10.5f;
-        System.out.println(value);
-    }
-}
-```
-
-### Output
-
-```text
-10.5
+double pi = 3.14159;
 ```
 
 ***
 
-## `double`
+### 7) `char`
 
-### What is it?
+A `char` stores one Unicode character.
 
-`double` is a 64-bit floating-point type.
+- Size: 16 bits
+- Use: letters, symbols, single characters
 
+#### Why created?
+To store one character compactly.
+
+#### Example
 ```java
-double rate = 99.99;
+char grade = 'A';
 ```
 
-### Why does it exist?
-
-It provides more precision than `float`.
-
-### Why do we need it?
-
-Most decimal work needs better precision than `float` provides.
-
-### What problem does it solve?
-
-It stores decimal numbers more accurately, though still not perfectly for all decimal fractions.
-
-### Memory size
-
-- 64 bits
-- 8 bytes
-
-### Range
-
-Very large positive and negative values, with about 15 to 16 decimal digits of precision.
-
-### Default value
-
-- `0.0d`
-
-### Wrapper class
-
-- `Double`
-
-### Internal working
-
-Also uses IEEE 754 binary floating-point representation.
-
-### Performance
-
-- Standard choice for decimals
-- More precise than `float`
-- Slightly more memory than `float`
-
-### Real use cases
-
-- Measurements
-- Engineering calculations
-- General decimal values
-- Approximate scientific computations
-
-### Syntax
-
-```java
-double amount = 45.67;
-```
-
-### Code example
-
-```java
-public class DoubleDemo {
-    public static void main(String[] args) {
-        double pi = 3.14159;
-        System.out.println(pi);
-    }
-}
-```
-
-### Output
-
-```text
-3.14159
-```
-
-### Common beginner mistake
-
-Assuming decimal numbers are stored exactly in binary. Many are not.
+#### Rule
+Use single quotes.
 
 ***
 
-## `char`
+### 8) `boolean`
 
-### What is it?
-
-`char` stores a single 16-bit Unicode code unit.
-
-```java
-char c = 'A';
-```
-
-### Why does it exist?
-
-It exists to store individual characters.
-
-### Why do we need it?
-
-Useful for:
-
-- letters,
-- symbols,
-- text processing,
-- character comparisons.
-
-### What problem does it solve?
-
-It stores one character in a compact way.
-
-### Memory size
-
-- 16 bits
-- 2 bytes
-
-### Range
-
-- `'\u0000'` to `'\uffff'`
-
-### Default value
-
-- `'\u0000'`
-
-### Wrapper class
-
-- `Character`
-
-### Internal working
-
-Java `char` uses UTF-16 code units. That means it can represent many Unicode characters directly, but some characters require surrogate pairs.
-
-### Real use cases
-
-- First letter of a name
-- Grade letters
-- Parsing text
-- Character classification
-
-### Syntax
-
-```java
-char letter = 'J';
-```
-
-### Rules
-
-- Use single quotes.
-- Only one character directly inside quotes.
-- Escape sequences are allowed.
-
-### Common mistake
-
-```java
-char c = "A"; // wrong
-```
-
-Use single quotes for `char`.
-
-### Code example
-
-```java
-public class CharDemo {
-    public static void main(String[] args) {
-        char ch = 'Z';
-        System.out.println(ch);
-    }
-}
-```
-
-### Output
-
-```text
-Z
-```
-
-***
-
-## `boolean`
-
-### What is it?
-
-`boolean` stores true/false logic.
-
-```java
-boolean isReady = true;
-```
-
-### Why does it exist?
-
-It exists for decisions and control flow.
-
-### Why do we need it?
-
-Programs often need yes/no decisions:
-
-- login success,
-- file exists,
-- condition passed,
-- loop should continue.
-
-### What problem does it solve?
-
-It represents logical truth values.
-
-### Values
+A `boolean` stores only two values:
 
 - `true`
 - `false`
 
-### Default value
+#### Why created?
+To represent decisions and conditions.
 
-- `false`
+#### Example
+```java
+boolean active = true;
+```
 
-### Wrapper class
+***
 
-- `Boolean`
+## Literals
 
-### Internal working
+A literal is a value written directly in code. Java’s literal forms include numeric, string, boolean, and character forms. [docs.oracle](https://docs.oracle.com/cd/E19798-01/821-1841/bnbuv/index.html)
 
-The Java language defines only two logical values. The JVM may store them in implementation-specific ways internally, but from the programmer’s point of view, only `true` and `false` matter.
+### Integer literals
+```java
+int a = 10;
+```
 
-### Real use cases
+### Long literals
+```java
+long b = 10L;
+```
 
-- `isActive`
-- `hasPermission`
-- `isPaid`
-- `isEmpty`
+### Float literals
+```java
+float c = 3.14f;
+```
 
-### Code example
+### Double literals
+```java
+double d = 3.14;
+```
+
+### Character literals
+```java
+char e = 'J';
+```
+
+### Boolean literals
+```java
+boolean f = true;
+```
+
+### String literals
+```java
+String g = "Java";
+```
+
+***
+
+## Binary, Octal, Hexadecimal
+
+Java lets you write integers in different number systems.
+
+### Binary
+Base 2
 
 ```java
-public class BooleanDemo {
-    public static void main(String[] args) {
-        boolean passed = true;
-        System.out.println(passed);
-    }
-}
+int x = 0b1010;
 ```
 
-### Output
+### Octal
+Base 8
 
-```text
-true
+```java
+int y = 012;
 ```
 
-### Important note
+### Hexadecimal
+Base 16
 
-In Java, `boolean` is not converted to numbers like in some other languages.
+```java
+int z = 0x10;
+```
+
+### Simple comparison
+
+| Form | Example | Decimal Value |
+|---|---|---:|
+| Binary | `0b1010` | 10 |
+| Octal | `012` | 10 |
+| Decimal | `10` | 10 |
+| Hex | `0xA` | 10 |
+
+### Warning
+`012` is not twelve. It is octal.
 
 ***
 
-## Primitive vs Primitive: How to Choose
+## Numeric Separators and Scientific Notation
 
-| Need | Best Type |
-|---|---|
-| Very small integer | `byte` |
-| Small integer | `short` |
-| General integer | `int` |
-| Very large integer | `long` |
-| Small decimal | `float` |
-| General decimal | `double` |
-| One character | `char` |
-| True/false | `boolean` |
+### Numeric separators
 
-### Best practice
+Underscores make big numbers easier to read.
 
-If you are unsure, use:
+```java
+int million = 1_000_000;
+long card = 1234_5678_9012_3456L;
+```
 
-- `int` for integers
-- `double` for decimals
-- `boolean` for conditions
-- `char` for one character
+### Scientific notation
+
+Used for very large or very small decimal numbers.
+
+```java
+double a = 1.5e3;   // 1500.0
+double b = 2.0E-4;  // 0.0002
+```
+
+### Why useful?
+Because long digit lists are hard for the eyes.
 
 ***
 
-## Internal Working of Primitives
+## Type Conversion
 
-Primitive values are stored directly as raw data.
+Type conversion means changing one data type into another.
+
+### Widening conversion
+Smaller type to larger type.
+
+```java
+int x = 10;
+double y = x;
+```
+
+This is usually automatic.
+
+### Narrowing conversion
+Larger type to smaller type.
+
+```java
+double x = 10.5;
+int y = (int) x;
+```
+
+This needs casting.
+
+### Precision loss
+Some data may be lost when converting to a smaller or less precise type.
+
+### Data loss
+Part of the value may disappear.
+
+### Overflow
+Value becomes too large for the destination type.
+
+### Underflow
+Value becomes too small in magnitude to be represented properly, especially in floating-point work.
+
+### Simple rule
+- widening = safe
+- narrowing = risky
+
+***
+
+## Type Promotion
+
+Type promotion happens when Java automatically changes small numeric types into bigger ones during calculations.
 
 ### Example
 
 ```java
-int x = 42;
+byte a = 10;
+byte b = 20;
+int c = a + b;
 ```
 
-Java stores the 32-bit binary form of `42`.
+Why `int`?  
+Because Java promotes smaller integer types during arithmetic.
 
-### Why this is efficient
+### Unary promotion
+For one value.
 
-- No object creation
-- No extra object metadata
-- Faster access
-- Less memory overhead
+```java
+byte a = 10;
+int b = +a;
+```
 
-### JVM behavior
+### Binary numeric promotion
+For two values in expressions.
 
-When primitives are local variables, they are usually kept in stack frames or optimized registers. The Java specification defines primitive types, while memory placement is influenced by the JVM and execution context. [developer](https://www.developer.com/java/stack-heap-java-memory/)
+```java
+int x = 5 + 2.5;
+```
+
+Java promotes the smaller/less precise value to make the operation work.
+
+### Method argument promotion
+Java may promote values when passing arguments to methods.
+
+### Operator behavior
+Arithmetic operators often promote values to `int`, `long`, `float`, or `double` depending on the expression.
 
 ***
 
-## Memory Representation
+## Integer Internals
 
-### Example for `int`
+Integers are stored in binary. Java uses signed values and two’s complement for integer representation.
 
-```java
-int x = 10;
-```
+### Two’s complement idea
+It is a binary system that lets Java represent negative numbers.
 
-Binary form conceptually:
+### Example
+`5` in binary is easy.  
+Negative numbers are stored using two’s complement rules.
 
-```text
-00000000 00000000 00000000 00001010
-```
-
-### Example for `byte`
+### Overflow
+When an integer goes beyond its max value, it wraps around.
 
 ```java
-byte b = 5;
+byte b = 127;
+b++;
+System.out.println(b);
 ```
 
-Binary form:
-
+Output:
 ```text
-00000101
+-128
 ```
 
-### Example for `boolean`
-
-A boolean is logically true or false. Internally, JVM representation is not something you should depend on.
-
-### Text memory diagram
-
-```text
-Stack Frame
-+--------------------------+
-| byte b      -> 00000101  |
-| int x       -> 10        |
-| long y      -> 1234L     |
-| char c      -> 'A'       |
-| boolean ok   -> true      |
-+--------------------------+
-```
+### Why this happens
+The bit pattern rolls over.
 
 ***
 
-## JVM Behavior
+## Floating-Point Internals
 
-The JVM executes bytecode and handles values according to their types.
+Java floating-point types follow IEEE 754 rules. Oracle’s Java docs describe `float` and `double` as floating-point types. [w3schools](https://www.w3schools.com/java/java_data_types.asp)
 
-### What JVM does with primitives
+### Why decimals can be surprising
+Some decimal numbers cannot be stored exactly in binary.
 
-- validates type usage,
-- performs arithmetic using type rules,
-- stores values efficiently,
-- applies promotions during expressions.
+### Example
+```java
+System.out.println(0.1 + 0.2);
+```
+
+This may not print exactly `0.3`.
+
+### Important ideas
+
+- precision
+- rounding
+- NaN
+- infinity
+- positive zero
+- negative zero
+
+### NaN
+Means “Not a Number”.
+
+### Infinity
+Happens when a number is too large to fit.
+
+### Positive and negative zero
+They are special floating-point values with subtle differences.
+
+***
+
+## Character Internals
+
+A `char` in Java is a 16-bit Unicode code unit.
 
 ### Why this matters
+Java supports many world languages and symbols.
 
-The JVM must know the exact primitive type to run correct low-level operations.
+### ASCII
+Old 7-bit character set for English letters and symbols.
+
+### Unicode
+Much larger character system for many languages.
+
+### UTF-16
+Java `char` uses UTF-16 code units.
+
+### Code point
+A numeric value assigned to a character.
+
+### Escape sequences
+Special written forms like:
+
+```java
+'\n'
+'\t'
+'\\'
+'\''
+```
+
+***
+
+## Internal Working
+
+Java source code is compiled into bytecode. The JVM then runs the bytecode and uses type rules to store and convert values.
+
+### Example
+
+```java
+int a = 10;
+double b = a;
+```
+
+- `10` is stored as an `int`
+- `b` becomes `10.0`
+
+### Why this matters
+You can predict output and spot type errors early.
+
+***
+
+## Real Project Example
+
+Imagine a shopping app.
+
+```java
+int quantity = 3;
+long orderId = 5000000000L;
+float taxRate = 5.5f;
+double price = 499.99;
+char rating = 'A';
+boolean inStock = true;
+String productName = "Keyboard";
+```
+
+### Meaning
+- `quantity` = count
+- `orderId` = big ID
+- `taxRate` = small decimal
+- `price` = money estimate
+- `rating` = one letter
+- `inStock` = yes/no
+- `productName` = text
 
 ***
 
 ## Common Mistakes
 
-- Using `byte` or `short` when `int` is better.
-- Forgetting `L` for `long` literals.
-- Forgetting `f` for `float` literals.
-- Using `float` for money.
-- Using `==` to compare decimal precision expectations.
-- Writing `char` with double quotes.
-- Assuming `boolean` can store `1` or `0`.
+- Forgetting `L` for `long`
+- Forgetting `f` for `float`
+- Using `char` with double quotes
+- Thinking `012` means twelve
+- Using `float` for money
+- Assuming decimals are exact
+- Forgetting narrowing casts
+- Expecting `byte + byte` to stay `byte`
 
 ***
 
 ## Interview Questions
 
-1. Why does Java have 8 primitive types?
-2. What is the range of `byte`?
-3. Why is `int` commonly used instead of `short`?
-4. Why does `long` need `L` suffix?
-5. Why is `float` less preferred than `double`?
-6. Why is `char` 16-bit in Java?
-7. Can `boolean` store numeric values?
-8. Why are primitives faster than objects?
-9. What happens if `int` overflows?
-10. What is the default value of `char`?
+1. How many primitive types are there?
+2. Why is `int` used most often?
+3. What is the range of `byte`?
+4. Why does `long` need `L`?
+5. Why does `float` need `f`?
+6. What is the difference between `char` and `String`?
+7. What is widening conversion?
+8. What is narrowing conversion?
+9. What is overflow?
+10. What is two’s complement?
+11. Why does `byte + byte` become `int`?
+12. What is IEEE 754?
+13. What is NaN?
+14. What is scientific notation?
+15. What are escape sequences?
 
 ***
 
@@ -1005,97 +620,123 @@ System.out.println(b);
 2.
 ```java
 int x = 10;
-long y = x;
+double y = x;
 System.out.println(y);
 ```
 
 3.
 ```java
-char c = 'A';
-System.out.println((int) c);
+System.out.println(0b1010);
 ```
 
-### Conceptual
+4.
+```java
+System.out.println(012);
+```
 
-4. Why is `double` more common than `float`?
-5. Why can `byte` overflow easily?
-6. Why is `char` not the same as `String`?
+5.
+```java
+System.out.println(1.5e3);
+```
+
+### Explain in simple words
+
+6. Why is `3.14` a `double` by default?
+7. Why does `float` need `f`?
+8. Why is `char` not the same as `String`?
+9. Why can decimals be imprecise?
+10. Why is `int` the default whole number type?
 
 ***
 
-## Code Example: All Primitives Together
+## Answers
 
-```java
-public class PrimitiveTypesDemo {
-    public static void main(String[] args) {
-        byte b = 100;
-        short s = 2000;
-        int i = 30000;
-        long l = 4000000000L;
-        float f = 12.5f;
-        double d = 99.99;
-        char c = 'J';
-        boolean ok = true;
+### Answers to the questions first
 
-        System.out.println(b);
-        System.out.println(s);
-        System.out.println(i);
-        System.out.println(l);
-        System.out.println(f);
-        System.out.println(d);
-        System.out.println(c);
-        System.out.println(ok);
-    }
-}
-```
+1. Java has 8 primitive types.
+2. `int` is used most often because it gives a good balance of speed and range.
+3. `byte` range is `-128` to `127`.
+4. `long` needs `L` because integer literals are `int` by default.
+5. `float` needs `f` because decimal literals are `double` by default.
+6. `char` stores one character; `String` stores text as an object.
+7. Widening conversion means changing a smaller type into a larger type safely.
+8. Narrowing conversion means changing a larger type into a smaller type, which may lose data.
+9. Overflow happens when a value is too large for the type.
+10. Two’s complement is the binary system Java uses for signed integers.
+11. `byte + byte` becomes `int` because Java promotes smaller integer types in arithmetic.
+12. IEEE 754 is the standard for floating-point representation.
+13. NaN means Not a Number.
+14. Scientific notation is a compact way to write very large or very small decimal values.
+15. Escape sequences are special character forms like `\n` and `\t`.
 
-### Output
+### Answers to practice questions
 
+1. Output:
 ```text
-100
-2000
-30000
-4000000000
-12.5
-99.99
-J
-true
+-128
 ```
 
-### Dry run
+2. Output:
+```text
+10.0
+```
 
-- Each variable stores its own value.
-- Each `println` prints the current value.
-- No calculations occur here.
+3. Output:
+```text
+10
+```
+
+4. Output:
+```text
+10
+```
+
+5. Output:
+```text
+1500.0
+```
+
+6. `3.14` is `double` by default because Java treats decimal literals as double unless told otherwise.
+7. `float` needs `f` so Java knows the literal is a float.
+8. `char` is one character; `String` is many characters wrapped in an object.
+9. Decimals can be imprecise because many decimal fractions cannot be stored exactly in binary.
+10. `int` is default because it is the standard general-purpose integer type.
 
 ***
 
 ## Quick Revision Sheet
 
-- Primitive types store actual values.
-- There are 8 primitive types.
+- Primitive types store simple values directly.
+- Java has 8 primitive types.
 - `int` is the default integer type.
-- `double` is the default decimal type in practice.
-- `char` stores one Unicode character.
-- `boolean` stores only true/false.
-- `byte` and `short` are smaller integer types.
-- `long` handles large integers.
-- `float` saves memory but has lower precision.
+- `double` is the default decimal type.
+- `long` uses `L`.
+- `float` uses `f`.
+- `char` uses single quotes.
+- `boolean` uses `true` or `false`.
+- Binary, octal, and hex are just different number systems.
+- Widening conversion is safe.
+- Narrowing conversion may lose data.
+- Integer overflow wraps around.
+- Floating-point values can be imprecise.
 
 ***
 
 ## Cheat Sheet
 
-| Type | Literal Tip | Main Warning |
+| Concept | Example | Meaning |
 |---|---|---|
-| `byte` | No suffix | Overflow is easy |
-| `short` | No suffix | Rarely needed |
-| `int` | No suffix | Default integer |
-| `long` | Use `L` | Without `L`, literal may not fit |
-| `float` | Use `f` | Precision is limited |
-| `double` | No suffix | Still not exact for many decimals |
-| `char` | Single quotes | One character only |
-| `boolean` | `true` / `false` | Not numeric |
+| `byte` | `byte b = 10;` | tiny integer |
+| `short` | `short s = 20;` | small integer |
+| `int` | `int i = 30;` | normal integer |
+| `long` | `long l = 40L;` | large integer |
+| `float` | `float f = 3.5f;` | small precision decimal |
+| `double` | `double d = 3.5;` | normal decimal |
+| `char` | `char c = 'A';` | one character |
+| `boolean` | `boolean ok = true;` | true/false |
+| binary | `0b1010` | base 2 |
+| octal | `012` | base 8 |
+| hex | `0x10` | base 16 |
 
 ***
 
@@ -1118,46 +759,27 @@ Primitive Data Types
 |   +-- char
 |
 +-- Logic
-    +-- boolean
+|   +-- boolean
+|
++-- Literals
+|   +-- decimal
+|   +-- binary
+|   +-- octal
+|   +-- hex
+|   +-- long
+|   +-- float
+|   +-- double
+|   +-- char
+|   +-- boolean
+|   +-- string
+|
++-- Conversion
+|   +-- widening
+|   +-- narrowing
+|
++-- Promotion
+|   +-- unary
+|   +-- binary
 ```
-
-***
-
-## Questions and Answers
-
-### Answers to interview questions
-
-1. Java has 8 primitive types to cover basic numeric, character, and logical data efficiently.
-2. `byte` range is `-128` to `127`.
-3. `int` is commonly used because it balances size, speed, and range.
-4. `long` needs `L` to make the literal clearly a long value.
-5. `float` is less preferred because it has lower precision than `double`.
-6. `char` is 16-bit because Java uses Unicode support.
-7. No, `boolean` can only store `true` or `false`.
-8. Primitives are faster because they store raw values without object overhead.
-9. If `int` overflows, it wraps around using two’s complement behavior.
-10. The default value of `char` is `'\u0000'`.
-
-### Answers to practice questions
-
-1. `byte b = 127; b++;` outputs `-128` due to overflow.
-2. `long y = x;` outputs `10`.
-3. `(int) c` outputs `65` for `'A'`.
-
-### Answers to conceptual questions
-
-4. `double` is more common because it provides better precision.
-5. `byte` overflows easily because it has only 8 bits.
-6. `char` stores one character; `String` stores a sequence of characters as an object.
-
-***
-
-## Module 2 Assignment
-
-1. Write a program using all 8 primitive types.
-2. Write a program showing overflow in `byte`.
-3. Write a program comparing `float` and `double`.
-4. Write a program that prints the numeric code of a `char`.
-5. Make a table of all primitive types with size, range, and wrapper class.
 
 ***
